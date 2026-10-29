@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/hellen-666/api-move--e5/issues"
   },
-  "homepage": "https://github.com/hellen-666/api-move--e5#readme"
+  "homepage": "https://github.com/hellen-666/api-move--e5#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
 }
