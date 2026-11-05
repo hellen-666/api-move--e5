@@ -81,7 +81,7 @@ app.put("/exercicios/:id", (req: Request, res: Response) => {
     const index = buscaExercicio(String(req.params.id));
 
     if(index === -1){
-        res.status(404).json({mensagem: "Exercicio não encontrado!"});
+        res.status(404).json({mensagem: "Exercício não encontrado!"});
         return;
     }
 
@@ -100,6 +100,21 @@ app.put("/exercicios/:id", (req: Request, res: Response) => {
     });
 });
 
+//REQUISIÇÃO DELETE (REMOVER DADOS)
+app.delete("/exercicios/:id", (req: Request, res: Response) => {
+    const index = buscaExercicio(String(req.params.id));
 
+    if (index === -1){
+        res.status(404).json({mensagem: "Exercício não encontrado!"});
+        return;
+    }
+
+    //Remove o exercicio do array base (exercicio) com base no índice (id)
+    exercicios.splice(index,1);
+
+    res.status(200).json({
+        mensagem: "Exercício removido com sucesso!",
+    });
+});
 
 export default app;
