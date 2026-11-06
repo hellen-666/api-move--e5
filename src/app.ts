@@ -76,8 +76,33 @@ app.post("/exercicios", (req: Request, res: Response) => {
 });
 
 
-//REQUISIÇÃO PUT (ATUALIZAR DADOS)
+// REQUISIÇÃO PUT (ATUALIZAR DADOS)
 app.put("/exercicios/:id", (req: Request, res: Response) => {
+    const index = buscaExercicio(String(req.params.id));
+
+    if (index === -1) {
+        res.status(404).json({ mensagem: "Exercício não encontrado!" });
+        return;
+    }
+
+    const { nome, categoria, dificuldade } = req.body;
+
+    exercicios[index] = {
+        ...exercicios[index]!,
+        nome,
+        categoria,
+        dificuldade,
+    };
+
+    res.status(200).json({
+        mensagem: "Exercício atualizado com sucesso!",
+        exercicio: exercicios[index]
+    });
+});
+
+
+//REQUISIÇÃO PATCH (ATUALIZAR PARCIALMENTE DADOS)
+app.patch("/exercicios/:id", (req: Request, res: Response) => {
     const index = buscaExercicio(String(req.params.id));
 
     if(index === -1){
@@ -89,9 +114,9 @@ app.put("/exercicios/:id", (req: Request, res: Response) => {
 
     exercicios[index] = {
         ...exercicios[index]!,
-        nome,
-        categoria,
-        dificuldade
+        ...(nome !== undefined && { nome }),
+        ...(categoria !== undefined && { categoria }),
+        ...(dificuldade !== undefined && { dificuldade })
     };
 
     res.status(200).json({
