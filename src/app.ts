@@ -1,12 +1,13 @@
 import express from "express";
 import type { Request, Response } from "express";
+import Exercicio from "./models/Exercicio.js";
 
-export interface Exercicio {
-    id: number;
-    nome: string;
-    categoria: string;
-    dificuldade: string;
-}
+// export interface Exercicio {
+//     id: number;
+//     nome: string;
+//     categoria: string;
+//     dificuldade: string;
+// }
 
 const app = express();
 
@@ -14,45 +15,54 @@ const app = express();
 //MIDDLEWARE
 app.use(express.json());
 
-const exercicios = [
-    {
-        id: 1,
-        nome: "Agachamento livre",
-        categoria: "Pernas",
-        dificuldade: "Fácil"
-    },
+// const exercicios = [
+//     {
+//         id: 1,
+//         nome: "Agachamento livre",
+//         categoria: "Pernas",
+//         dificuldade: "Fácil"
+//     },
 
-    {
-        id: 2,
-        nome: "Elevação lateral",
-        categoria: "Ombros",
-        dificuldade: "Médio"
-    },
+//     {
+//         id: 2,
+//         nome: "Elevação lateral",
+//         categoria: "Ombros",
+//         dificuldade: "Médio"
+//     },
 
-    {
-        id: 3,
-        nome: "Abdominal",
-        categoria: "Abdômen",
-        dificuldade: "Médio"
-    },
-]
+//     {
+//         id: 3,
+//         nome: "Abdominal",
+//         categoria: "Abdômen",
+//         dificuldade: "Médio"
+//     },
+// ]
 
 
 //FUNÇÕES
-function buscaExercicio(id: string | number): number {
-    return exercicios.findIndex(exercicio => {
-        return exercicio.id === Number(id);
-    });
-}
+
+// function buscaExercicio(id: string | number): number {
+//     return exercicios.findIndex(exercicio => {
+//         return exercicio.id === Number(id);
+//     });
+// }
 
 
 //REQUISIÇÕES
+
 app.get("/", (req: Request, res: Response) => {
     res.status(200).send("Codificação BackEnd");
 });
 
-app.get("/exercicios", (req: Request, res: Response) => {
-    res.status(200).json(exercicios);
+app.get("/exercicios", async (req: Request, res: Response) => {
+    try{
+        const listaExercicios = await Exercicio.find({});
+        res.status(200).json(listaExercicios);
+    }catch (error){
+        res.status(500).json({ mensagem: "Erro ao buscar exercício."})
+    }
+
+    
 });
 
 

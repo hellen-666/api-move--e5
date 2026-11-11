@@ -21,7 +21,7 @@ const ExercicioSchema: Schema = new Schema({
 export type InterfaceExercicio = InferSchemaType <typeof ExercicioSchema>;
 
 //CRIAÇÃO DO MODEL (MONGOOSE)
-const Exercicio= mongoose.model("Exercicio, ExercicioSchema");
+const Exercicio = mongoose.model("Exercicio", ExercicioSchema);
 
 //DISPONIBILIZA MODULO PARA SER IMPORT EM OUTROS ARQUIVOs
 export default Exercicio;
