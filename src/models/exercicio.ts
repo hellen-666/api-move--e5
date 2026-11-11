@@ -23,5 +23,5 @@ export type InterfaceExercicio = InferSchemaType <typeof ExercicioSchema>;
 //CRIAÇÃO DO MODEL (MONGOOSE)
 const Exercicio= mongoose.model("Exercicio, ExercicioSchema");
 
-//DISPONIBILIZA O MODULO PARA SER IMPORT EM OUTROS ARQUIVOS
+//DISPONIBILIZA MODULO PARA SER IMPORT EM OUTROS ARQUIVOs
 export default Exercicio;
