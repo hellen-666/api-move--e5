@@ -13,6 +13,7 @@ const ExercicioSchema: Schema = new Schema({
     categoria: { type: String, required: true },
     dificuldade: { type: String, required: true }
 },
+
 { versionKey: false },
 );
 
