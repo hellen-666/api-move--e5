@@ -5,13 +5,23 @@ export interface InterExercicio extends Document {
     nome: string;
     categoria: string;
     dificuldade: string;
+    equipamento: string;
+    grupo_muscular: string;
+    descricao: string;
+    serie: number;
+    repeticoes: number;
 }
 
 //DEFINIÇÃO DO SCHEMA MAPEANDO OS CAMPOS
 const ExercicioSchema: Schema = new Schema({
     nome: { type: String, required: true },
     categoria: { type: String, required: true },
-    dificuldade: { type: String, required: true }
+    dificuldade: { type: String, required: true },
+    equipamento: { type: String, required: true },
+    grupo_muscular: { type: String, required: true },
+    descricao: { type: String, required: true },
+    serie: { type: Number, required: true },
+    repeticoes: { type: Number, required: true }
 },
 
 { versionKey: false },

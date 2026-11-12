@@ -14,7 +14,7 @@ const app = express();
 
 //MIDDLEWARE
 app.use(express.json());
-app.set("json spaces", 2); 
+app.set("json spaces", 2);
 
 // const exercicios = [
 //     {
@@ -67,12 +67,17 @@ app.get("/exercicios", async (req: Request, res: Response) => {
 
 //REQUISIÇÃO POST (CADASTRAR NOVO EXERCICIO)
 app.post("/exercicios", async (req: Request<{},{},InterExercicio>, res: Response) => {
-    const { nome, categoria, dificuldade } = req.body;
+    const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, serie, repeticoes } = req.body;
 
     const novoExercicio = await Exercicio.create({
         nome,
         categoria,
         dificuldade,
+        equipamento,
+        grupo_muscular,
+        descricao,
+        serie,
+        repeticoes
     });
 
     // exercicios.push(novoExercicio);
@@ -85,28 +90,48 @@ app.post("/exercicios", async (req: Request<{},{},InterExercicio>, res: Response
 
 
 // REQUISIÇÃO PUT (ATUALIZAR DADOS)
-app.put("/exercicios/:id", (req: Request, res: Response) => {
-    const index = buscaExercicio(String(req.params.id));
+app.put("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, res: Response) => {
 
-    if (index === -1) {
-        res.status(404).json({ mensagem: "Exercício não encontrado!" });
-        return;
-    }
+    // const index = buscaExercicio(String(req.params.id));
+    try{
+        const { id } = req.params;
 
-    const { nome, categoria, dificuldade } = req.body;
+        // if (index === -1) {
+        //     res.status(404).json({ mensagem: "Exercício não encontrado!" });
+        //     return;
+        // }
 
-    exercicios[index] = {
-        ...exercicios[index]!,
-        nome,
-        categoria,
-        dificuldade,
-    };
+        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, serie, repeticoes } = req.body;
 
-    res.status(200).json({
-        mensagem: "Exercício atualizado com sucesso!",
-        exercicio: exercicios[index]
+        // exercicios[index] = {
+        //     ...exercicios[index]!,
+        //     nome,
+        //     categoria,
+        //     dificuldade,
+        // };
+
+        const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
+            {
+                nome,
+                categoria,
+                dificuldade,
+                equipamento,
+                grupo_muscular,
+                descricao,
+                serie,
+                repeticoes
+            },
+            {new: true}
+        );
+
+        res.status(200).json({
+            mensagem: "Exercício atualizado com sucesso!",
+            exercicio: exercicioAtualizado
+        });
+        }catch (error){
+            res.status(500).json({ mensagem: "Erro ao atualizar exercício."})
+        }
     });
-});
 
 
 //REQUISIÇÃO PATCH (ATUALIZAR PARCIALMENTE DADOS)
