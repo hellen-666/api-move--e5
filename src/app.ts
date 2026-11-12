@@ -1,6 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
-import Exercicio, { type InterfaceExercicio } from "./models/Exercicio.js";
+import Exercicio from "./models/Exercicio.js";
 
 // export interface Exercicio {
 //     id: number;
@@ -14,7 +14,6 @@ const app = express();
 
 //MIDDLEWARE
 app.use(express.json());
-app.set("json spaces", 2);
 
 // const exercicios = [
 //     {
@@ -68,26 +67,23 @@ app.get("/exercicios", async (req: Request, res: Response) => {
 
 
 //REQUISIÇÃO POST (CADASTRAR NOVO EXERCICIO)
-app.post("/exercicios", async (req: Request<{},{},InterfaceExercicio>, res: Response) => {
-    try{
-        const { nome, categoria, dificuldade } = req.body;
+app.post("/exercicios", (req: Request, res: Response) => {
+    const { id, nome, categoria, dificuldade } = req.body;
 
-        const novoExercicio = await Exercicio.create({
-            nome,
-            categoria,
-            dificuldade,
-        })
+    const novoExercicio: Exercicio = {
+        id: Number(id),
+        nome,
+        categoria,
+        dificuldade,
+    };
 
-        // exercicios.push(novoExercicio);
+    exercicios.push(novoExercicio);
 
-        res.status(201).json({
-            mensagem: "Exercício cadastrado com sucesso!",
-            exercicio: novoExercicio
-        });
-        }catch (error){
-            res.status(500).json({mensagem: "Erro ao cadastrar exercício."})
-        }
+    res.status(201).json({
+        mensagem: "Exercício cadastrado com sucesso!",
+        exercicio: novoExercicio
     });
+});
 
 
 // REQUISIÇÃO PUT (ATUALIZAR DADOS)
