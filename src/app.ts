@@ -111,6 +111,7 @@ app.put("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, 
         // };
 
         const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
+            id,
             {
                 nome,
                 categoria,
@@ -148,7 +149,7 @@ app.patch("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>
         const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
             id,
             { $set: req.body },
-            { new: true}
+            { returnDocument: "after" }
         );
 
         if(!exercicioAtualizado){
