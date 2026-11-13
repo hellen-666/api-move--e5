@@ -176,20 +176,29 @@ app.patch("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>
 });
 
 //REQUISIÇÃO DELETE (REMOVER DADOS)
-app.delete("/exercicios/:id", (req: Request, res: Response) => {
-    const index = buscaExercicio(String(req.params.id));
+app.delete("/exercicios/:id", async (req: Request<{id: string}>, res: Response) => {
+    // const index = buscaExercicio(String(req.params.id));
+    try{
+        const { id } = req.params;
+        
+        const exercicioDeletado = await Exercicio.findByIdAndDelete(id);
 
-    if (index === -1){
-        res.status(404).json({mensagem: "Exercício não encontrado!"});
-        return;
+
+        if (!exercicioDeletado) {
+            res.status(404).json({mensagem: "Exercício não encontrado!"});
+            return;
+        }
+
+        //Remove o exercicio do array base (exercicio) com base no índice (id)
+        // exercicios.splice(index,1);
+
+        res.status(200).json({
+            mensagem: "Exercício removido com sucesso!",
+        });
+    }catch (error){
+        res.status(500).json({mensagem: "Erro ao remover exercício."})
     }
-
-    //Remove o exercicio do array base (exercicio) com base no índice (id)
-    exercicios.splice(index,1);
-
-    res.status(200).json({
-        mensagem: "Exercício removido com sucesso!",
-    });
 });
+
 
 export default app;
