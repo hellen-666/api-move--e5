@@ -124,6 +124,11 @@ app.put("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, 
             {new: true}
         );
 
+        if(!exercicioAtualizado){
+            res.status(404).json({mensagem: "Exercício não encontrado!"});
+            return;
+        }
+        
         res.status(200).json({
             mensagem: "Exercício atualizado com sucesso!",
             exercicio: exercicioAtualizado
