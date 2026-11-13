@@ -1,6 +1,6 @@
 import express from "express";
 import type { Request, Response } from "express";
-import Exercicio, { type InterExercicio } from "./models/Exercicio.js";
+import Exercicio, { type InterExercicio } from "./models/exercicio.js";
 
 // export interface Exercicio {
 //     id: number;
@@ -67,7 +67,7 @@ app.get("/exercicios", async (req: Request, res: Response) => {
 
 //REQUISIÇÃO POST (CADASTRAR NOVO EXERCICIO)
 app.post("/exercicios", async (req: Request<{},{},InterExercicio>, res: Response) => {
-    const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, serie, repeticoes } = req.body;
+    const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
 
     const novoExercicio = await Exercicio.create({
         nome,
@@ -76,7 +76,7 @@ app.post("/exercicios", async (req: Request<{},{},InterExercicio>, res: Response
         equipamento,
         grupo_muscular,
         descricao,
-        serie,
+        series,
         repeticoes
     });
 
@@ -101,7 +101,7 @@ app.put("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, 
         //     return;
         // }
 
-        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, serie, repeticoes } = req.body;
+        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
 
         // exercicios[index] = {
         //     ...exercicios[index]!,
@@ -118,7 +118,7 @@ app.put("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, 
                 equipamento,
                 grupo_muscular,
                 descricao,
-                serie,
+                series,
                 repeticoes
             },
             {new: true}
@@ -128,39 +128,50 @@ app.put("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, 
             res.status(404).json({mensagem: "Exercício não encontrado!"});
             return;
         }
-        
+
         res.status(200).json({
             mensagem: "Exercício atualizado com sucesso!",
             exercicio: exercicioAtualizado
         });
-        }catch (error){
+    }catch (error){
             res.status(500).json({ mensagem: "Erro ao atualizar exercício."})
-        }
-    });
+    }
+});
 
 
 //REQUISIÇÃO PATCH (ATUALIZAR PARCIALMENTE DADOS)
-app.patch("/exercicios/:id", (req: Request, res: Response) => {
-    const index = buscaExercicio(String(req.params.id));
+app.patch("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, res: Response) => {
+    // const index = buscaExercicio(String(req.params.id));
+    try{
+        const { id } = req.params;
 
-    if(index === -1){
-        res.status(404).json({mensagem: "Exercício não encontrado!"});
-        return;
+        const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
+            id,
+            { $set: req.body },
+            { new: true}
+        );
+
+        if(!exercicioAtualizado){
+            res.status(404).json({mensagem: "Exercício não encontrado!"});
+            return;
+        }
+
+        // const { nome, categoria, dificuldade } = req.body;
+
+        // exercicios[index] = {
+        //     ...exercicios[index]!,
+        //     ...(nome !== undefined && { nome }),
+        //     ...(categoria !== undefined && { categoria }),
+        //     ...(dificuldade !== undefined && { dificuldade })
+        // };
+
+        res.status(200).json({
+            mensagem: "Exercício atualizado com sucesso!",
+            exercicio: exercicioAtualizado
+        });
+    }catch (error){
+            res.status(500).json({ mensagem: "Erro ao atualizar parcialmente o exercício."})
     }
-
-    const { nome, categoria, dificuldade } = req.body;
-
-    exercicios[index] = {
-        ...exercicios[index]!,
-        ...(nome !== undefined && { nome }),
-        ...(categoria !== undefined && { categoria }),
-        ...(dificuldade !== undefined && { dificuldade })
-    };
-
-    res.status(200).json({
-        mensagem: "Exercício atualizado com sucesso!",
-        exercicio: exercicios[index]
-    });
 });
 
 //REQUISIÇÃO DELETE (REMOVER DADOS)

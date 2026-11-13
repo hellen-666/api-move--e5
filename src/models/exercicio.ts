@@ -8,7 +8,7 @@ export interface InterExercicio extends Document {
     equipamento: string;
     grupo_muscular: string;
     descricao: string;
-    serie: number;
+    series: number;
     repeticoes: number;
 }
 
@@ -20,7 +20,7 @@ const ExercicioSchema: Schema = new Schema({
     equipamento: { type: String, required: true },
     grupo_muscular: { type: String, required: true },
     descricao: { type: String, required: true },
-    serie: { type: Number, required: true },
+    series: { type: Number, required: true },
     repeticoes: { type: Number, required: true }
 },
 
