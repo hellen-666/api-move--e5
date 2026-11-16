@@ -55,150 +55,20 @@ app.get("/", (req: Request, res: Response) => {
     res.status(200).send("Codificação BackEnd");
 });
 
-app.get("/exercicios", async (req: Request, res: Response) => {
-    try{
-        const listaExercicios = await Exercicio.find({});
-        res.status(200).json(listaExercicios);
-    }catch (error){
-        res.status(500).json({ mensagem: "Erro ao buscar exercício."})
-    }
-});
-
-
 //REQUISIÇÃO POST (CADASTRAR NOVO EXERCICIO)
 app.post("/exercicios", async (req: Request<{},{},InterExercicio>, res: Response) => {
-    const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
-
-    const novoExercicio = await Exercicio.create({
-        nome,
-        categoria,
-        dificuldade,
-        equipamento,
-        grupo_muscular,
-        descricao,
-        series,
-        repeticoes
-    });
-
-    // exercicios.push(novoExercicio);
-
-    res.status(201).json({
-        mensagem: "Exercício cadastrado com sucesso!",
-        exercicio: novoExercicio
-    });
 });
-
 
 // REQUISIÇÃO PUT (ATUALIZAR DADOS)
 app.put("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, res: Response) => {
-
-    // const index = buscaExercicio(String(req.params.id));
-    try{
-        const { id } = req.params;
-
-        // if (index === -1) {
-        //     res.status(404).json({ mensagem: "Exercício não encontrado!" });
-        //     return;
-        // }
-
-        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
-
-        // exercicios[index] = {
-        //     ...exercicios[index]!,
-        //     nome,
-        //     categoria,
-        //     dificuldade,
-        // };
-
-        const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
-            id,
-            {
-                nome,
-                categoria,
-                dificuldade,
-                equipamento,
-                grupo_muscular,
-                descricao,
-                series,
-                repeticoes
-            },
-            {new: true}
-        );
-
-        if(!exercicioAtualizado){
-            res.status(404).json({mensagem: "Exercício não encontrado!"});
-            return;
-        }
-
-        res.status(200).json({
-            mensagem: "Exercício atualizado com sucesso!",
-            exercicio: exercicioAtualizado
-        });
-    }catch (error){
-            res.status(500).json({ mensagem: "Erro ao atualizar exercício."})
-    }
 });
-
 
 //REQUISIÇÃO PATCH (ATUALIZAR PARCIALMENTE DADOS)
 app.patch("/exercicios/:id", async (req: Request<{id: string},{},InterExercicio>, res: Response) => {
-    // const index = buscaExercicio(String(req.params.id));
-    try{
-        const { id } = req.params;
-
-        const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
-            id,
-            { $set: req.body },
-            { returnDocument: "after" }
-        );
-
-        if(!exercicioAtualizado){
-            res.status(404).json({mensagem: "Exercício não encontrado!"});
-            return;
-        }
-
-        // const { nome, categoria, dificuldade } = req.body;
-
-        // exercicios[index] = {
-        //     ...exercicios[index]!,
-        //     ...(nome !== undefined && { nome }),
-        //     ...(categoria !== undefined && { categoria }),
-        //     ...(dificuldade !== undefined && { dificuldade })
-        // };
-
-        res.status(200).json({
-            mensagem: "Exercício atualizado com sucesso!",
-            exercicio: exercicioAtualizado
-        });
-    }catch (error){
-            res.status(500).json({ mensagem: "Erro ao atualizar parcialmente o exercício."})
-    }
 });
 
 //REQUISIÇÃO DELETE (REMOVER DADOS)
 app.delete("/exercicios/:id", async (req: Request<{id: string}>, res: Response) => {
-    // const index = buscaExercicio(String(req.params.id));
-    try{
-        const { id } = req.params;
-        
-        const exercicioDeletado = await Exercicio.findByIdAndDelete(id);
-
-
-        if (!exercicioDeletado) {
-            res.status(404).json({mensagem: "Exercício não encontrado!"});
-            return;
-        }
-
-        //Remove o exercicio do array base (exercicio) com base no índice (id)
-        // exercicios.splice(index,1);
-
-        res.status(200).json({
-            mensagem: "Exercício removido com sucesso!",
-        });
-    }catch (error){
-        res.status(500).json({mensagem: "Erro ao remover exercício."})
-    }
 });
-
 
 export default app;

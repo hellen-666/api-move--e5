@@ -1,0 +1,119 @@
+import { response, type Request, type Response } from "express";
+import Exercicio, { type InterExercicio } from "../models/exercicio.js"
+
+class ExercicioController{
+
+    //GET - LISTAR TODOS OS EXERCÍCIOS DO BANCO
+    static async listar (req: Request, res: Response ) {
+        try{
+            const listaExercicios = await Exercicio.find({})
+            res.status(200).json(listaExercicios);
+        }catch (error){
+            res.status(500).json({mensagem: "Erro ao buscar exercício"});
+        }
+    }
+
+    //POST - CADASTRAR UM NOVO LIVRO NO BANCO
+    static async cadastrar (req: Request<{},{},InterExercicio>, res: Response) {
+        try{
+        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
+        const novoExercicio = await Exercicio.create({
+            nome,
+            categoria,
+            dificuldade,
+            equipamento,
+            grupo_muscular,
+            descricao,
+            series: Number(series),
+            repeticoes: Number(repeticoes),
+        });
+        res.status(201).json({
+            mensagem: "Exercício cadastrado com sucesso!",
+            exercicio: novoExercicio
+        });
+        }catch (error){
+            res.status(500).json({mensagem: "Erro ao cadastrar exercício."})
+        }
+    }
+
+    //PUT - ATUALIZAÇÃO COMPLETA
+    static async atualizar (req: Request<{id: string},{},InterExercicio>, res: Response ) {
+        try{
+            const { id } = req.params;
+            const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
+            const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
+                id,
+                {
+                    nome,
+                    categoria,
+                    dificuldade,
+                    equipamento,
+                    grupo_muscular,
+                    descricao,
+                    series,
+                    repeticoes
+                },
+                {new: true}
+            );
+
+            if(!exercicioAtualizado){
+                res.status(404).json({mensagem: "Exercício não encontrado."});
+                return;
+            }
+
+            res.status(200).json({
+                mensagem: "Exercício atualizado com sucesso!",
+                exercicio: exercicioAtualizado
+            });
+        }catch (error){
+            res.status(500).json({mensagem: "Erro ao atualizar exercício."})
+        }
+    }
+    //  PATCH  - ATUALIZAÇÃO PARCIAL
+        static async atualizarParcial (req: Request <{id: string}, {}, InterExercicio>, res: Response) {
+            try{
+            const { id } = req.params;
+
+            const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
+                id,
+                { $set: req.body },
+                { returnDocument: "after" }
+            );
+
+            if(!exercicioAtualizado){
+                res.status(404).json({mensagem: "Exercício não encontrado!"});
+                return;
+            }
+
+            res.status(200).json({
+                mensagem: "Exercício atualizado com sucesso!",
+                exercicio: exercicioAtualizado
+            });
+        }catch (error){
+            res.status(500).json({ mensagem: "Erro ao atualizar parcialmente o exercício."})
+        }
+    }
+
+    //DELETE - REMOVER EXERCÍCIO
+    static async deletar (req: Request<{id: string}>, res: Response ){
+    try{
+        const { id } = req.params;
+        
+        const exercicioDeletado = await Exercicio.findByIdAndDelete(id);
+
+
+        if (!exercicioDeletado) {
+            res.status(404).json({mensagem: "Exercício não encontrado!"});
+            return;
+        }
+
+        res.status(200).json({
+            mensagem: "Exercício removido com sucesso!",
+        });
+    }catch (error){
+        res.status(500).json({mensagem: "Erro ao remover exercício."})
+    }
+    }
+};
+
+export default ExercicioController;
