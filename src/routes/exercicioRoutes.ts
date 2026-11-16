@@ -9,3 +9,12 @@ const router = Router();
 
 //CRIAÇÃO DE ROTAS DA ENTIDADE EXERCICIO
 router.get("/exercicio", ExercicioController.listar);
+router.post("/exercicio", ExercicioController.cadastrar);
+router.put("/exercicio/:id", ExercicioController.atualizar);
+router.patch("/exercicio/:id", ExercicioController.atualizarParcial);
+router.delete("/exercicio/:id", ExercicioController.deletar);
+
+//EXPORTAR
+
+export default router;
+
