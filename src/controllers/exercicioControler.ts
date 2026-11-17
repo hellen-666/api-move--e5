@@ -1,4 +1,4 @@
-import { response, type Request, type Response } from "express";
+import { type Request, type Response } from "express";
 import Exercicio, { type InterfaceExercicio } from "../models/exercicio.js"
 
 class ExercicioController{
@@ -24,7 +24,6 @@ class ExercicioController{
                 return;
             }
             res.status(200).json(exercicioEncontrado);
-
         }catch (error){
             res.status(500).json({mensagem: "Erro ao buscar o exercício por ID."})
         }
@@ -33,22 +32,22 @@ class ExercicioController{
     //POST - CADASTRAR UM NOVO LIVRO NO BANCO
     static async cadastrar (req: Request<{},{},InterfaceExercicio>, res: Response) {
         try{
-        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
-        const novoExercicio = await Exercicio.create({
-            nome,
-            categoria,
-            dificuldade,
-            equipamento,
-            grupo_muscular,
-            descricao,
-            series: Number(series),
-            repeticoes: Number(repeticoes),
-            cover
-        });
-        res.status(201).json({
-            mensagem: "Exercício cadastrado com sucesso!",
-            exercicio: novoExercicio
-        });
+            const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
+            const novoExercicio = await Exercicio.create({
+                nome,
+                categoria,
+                dificuldade,
+                equipamento,
+                grupo_muscular,
+                descricao,
+                series: Number(series),
+                repeticoes: Number(repeticoes),
+                cover
+            });
+            res.status(201).json({
+                mensagem: "Exercício cadastrado com sucesso!",
+                exercicio: novoExercicio
+            });
         }catch (error){
             res.status(500).json({mensagem: "Erro ao cadastrar exercício."})
         }
@@ -88,9 +87,10 @@ class ExercicioController{
             res.status(500).json({mensagem: "Erro ao atualizar exercício."})
         }
     }
+
     //  PATCH  - ATUALIZAÇÃO PARCIAL
-        static async atualizarParcial (req: Request <{id: string}, {}, InterfaceExercicio>, res: Response) {
-            try{
+    static async atualizarParcial (req: Request <{id: string}, {}, InterfaceExercicio>, res: Response) {
+        try{
             const { id } = req.params;
 
             const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
@@ -115,23 +115,23 @@ class ExercicioController{
 
     //DELETE - REMOVER EXERCÍCIO
     static async deletar (req: Request<{id: string}>, res: Response ){
-    try{
-        const { id } = req.params;
-        
-        const exercicioDeletado = await Exercicio.findByIdAndDelete(id);
+        try{
+            const { id } = req.params;
+            
+            const exercicioDeletado = await Exercicio.findByIdAndDelete(id);
 
 
-        if (!exercicioDeletado) {
-            res.status(404).json({mensagem: "Exercício não encontrado!"});
-            return;
+            if (!exercicioDeletado) {
+                res.status(404).json({mensagem: "Exercício não encontrado!"});
+                return;
+            }
+
+            res.status(200).json({
+                mensagem: "Exercício removido com sucesso!",
+            });
+        }catch (error){
+            res.status(500).json({mensagem: "Erro ao remover exercício."})
         }
-
-        res.status(200).json({
-            mensagem: "Exercício removido com sucesso!",
-        });
-    }catch (error){
-        res.status(500).json({mensagem: "Erro ao remover exercício."})
-    }
     }
 };
 
