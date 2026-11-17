@@ -13,6 +13,23 @@ class ExercicioController{
         }
     }
 
+    //GET - BUSCAR UM EXERCÍCIO ESPECÍFICO PELO ID - REQ PARAMS
+    static async buscarPorId (req: Request<{id: string}>, res: Response ){
+        try{
+            const { id } = req.params;
+            const exercicioEncontrado = await Exercicio.findById(id);
+
+            if(!exercicioEncontrado){
+                res.status(404).json({mensagem: "Exercício não encontrado."});
+                return;
+            }
+            res.status(200).json(exercicioEncontrado);
+
+        }catch (error){
+            res.status(500).json({mensagem: "Erro ao buscar o exercício por ID."})
+        }
+    }
+
     //POST - CADASTRAR UM NOVO LIVRO NO BANCO
     static async cadastrar (req: Request<{},{},InterfaceExercicio>, res: Response) {
         try{
