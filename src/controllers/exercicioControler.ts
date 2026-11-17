@@ -1,10 +1,11 @@
 import { type Request, type Response } from "express";
 import Exercicio, { type InterfaceExercicio } from "../models/exercicio.js"
+import { diff } from "node:util";
 
 class ExercicioController{
 
     //GET - LISTAR TODOS OS EXERCÍCIOS DO BANCO
-    static async listar (req: Request, res: Response ) {
+    static async listar (req: Request, res: Response){
         try{
             const listaExercicios = await Exercicio.find({})
             res.status(200).json(listaExercicios);
@@ -29,8 +30,41 @@ class ExercicioController{
         }
     }
 
+    //GET - FILTRAR EXERCÍCIOS POR CRITÉRIOS OPCIONAIS - REQ QUERY
+    static async buscaPorFiltro (req: Request, res: Response){
+        try{
+            //Extrair os possíveis filtros enviados após o "?" na URL
+            const { name, category, muscle_group, difficulty } = req.query;
+
+            //Criar um objeto vazio para receber apenas os filtros preenchidos
+            const filtro: Record<string, any> = {};
+
+            if(name){
+                filtro.nome = String(name); //Busca exata
+            }
+
+            if(category){
+                filtro.categoria = String(category); //Busca exata
+            }
+
+            if(muscle_group){
+                filtro.grupo_muscular = { $regex: String(muscle_group), $options: "i" }
+            }
+
+            if(difficulty){
+                filtro.dificuldade = { $regex: String(difficulty), $options: "i"}
+            }
+            
+            const exerciciosFiltrados = await Exercicio.find(filtro);
+
+            res.status(200).json(exerciciosFiltrados)
+        }catch (error){
+            res.status(500).json({mensagem: "Erro ao filtrar."})
+        }
+    }
+
     //POST - CADASTRAR UM NOVO LIVRO NO BANCO
-    static async cadastrar (req: Request<{},{},InterfaceExercicio>, res: Response) {
+    static async cadastrar (req: Request<{},{},InterfaceExercicio>, res: Response){
         try{
             const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
             const novoExercicio = await Exercicio.create({
@@ -54,7 +88,7 @@ class ExercicioController{
     }
 
     //PUT - ATUALIZAÇÃO COMPLETA
-    static async atualizar (req: Request<{id: string},{},InterfaceExercicio>, res: Response ) {
+    static async atualizar (req: Request<{id: string},{},InterfaceExercicio>, res: Response ){
         try{
             const { id } = req.params;
             const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
@@ -89,7 +123,7 @@ class ExercicioController{
     }
 
     //  PATCH  - ATUALIZAÇÃO PARCIAL
-    static async atualizarParcial (req: Request <{id: string}, {}, InterfaceExercicio>, res: Response) {
+    static async atualizarParcial (req: Request <{id: string}, {}, InterfaceExercicio>, res: Response){
         try{
             const { id } = req.params;
 
