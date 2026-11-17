@@ -1,5 +1,5 @@
 import { response, type Request, type Response } from "express";
-import Exercicio, { type InterExercicio } from "../models/exercicio.js"
+import Exercicio, { type InterfaceExercicio } from "../models/exercicio.js"
 
 class ExercicioController{
 
@@ -14,9 +14,9 @@ class ExercicioController{
     }
 
     //POST - CADASTRAR UM NOVO LIVRO NO BANCO
-    static async cadastrar (req: Request<{},{},InterExercicio>, res: Response) {
+    static async cadastrar (req: Request<{},{},InterfaceExercicio>, res: Response) {
         try{
-        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
+        const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
         const novoExercicio = await Exercicio.create({
             nome,
             categoria,
@@ -26,6 +26,7 @@ class ExercicioController{
             descricao,
             series: Number(series),
             repeticoes: Number(repeticoes),
+            cover
         });
         res.status(201).json({
             mensagem: "Exercício cadastrado com sucesso!",
@@ -37,10 +38,10 @@ class ExercicioController{
     }
 
     //PUT - ATUALIZAÇÃO COMPLETA
-    static async atualizar (req: Request<{id: string},{},InterExercicio>, res: Response ) {
+    static async atualizar (req: Request<{id: string},{},InterfaceExercicio>, res: Response ) {
         try{
             const { id } = req.params;
-            const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes } = req.body;
+            const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
             const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
                 id,
                 {
@@ -51,7 +52,8 @@ class ExercicioController{
                     grupo_muscular,
                     descricao,
                     series,
-                    repeticoes
+                    repeticoes,
+                    cover
                 },
                 {new: true}
             );
@@ -70,7 +72,7 @@ class ExercicioController{
         }
     }
     //  PATCH  - ATUALIZAÇÃO PARCIAL
-        static async atualizarParcial (req: Request <{id: string}, {}, InterExercicio>, res: Response) {
+        static async atualizarParcial (req: Request <{id: string}, {}, InterfaceExercicio>, res: Response) {
             try{
             const { id } = req.params;
 
