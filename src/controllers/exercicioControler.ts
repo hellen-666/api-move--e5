@@ -1,6 +1,5 @@
 import { type Request, type Response } from "express";
 import Exercicio, { type InterfaceExercicio } from "../models/exercicio.js"
-import { diff } from "node:util";
 
 class ExercicioController{
 
