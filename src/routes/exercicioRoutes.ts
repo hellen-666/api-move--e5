@@ -4,6 +4,12 @@ import { Router } from "express";
 //IMPORTA O CONTROLLER DE EXERCICIOS
 import ExercicioController from "../controllers/exercicioControler.js"
 
+//IMPORTA O MIDDLEWARE (VALIDAÇÃO DE DADOS)
+import { validarDados } from "../middlewares/dataValidator.js";
+
+//IMPORTA OS SCHEMAS DO ZOD (VALIDADOR)
+import { criarExercicioValidator, atualizarExercicioValidator } from "../validators/exercicioValidator.js";
+
 //INICIALIZAR O GERENCIADOR DE ROTAS DO EXPRESS
 const router = Router();
 
@@ -15,9 +21,9 @@ router.get("/exercicio/busca", ExercicioController.buscaPorFiltro);
 router.get("/exercicio/:id", ExercicioController.buscarPorId);
 
 //2º ROTAS ESTÁTICA/DINÂMICAS DE ESCRITA E REMOÇÃO
-router.post("/exercicio", ExercicioController.cadastrar);
-router.put("/exercicio/:id", ExercicioController.atualizar);
-router.patch("/exercicio/:id", ExercicioController.atualizarParcial);
+router.post("/exercicio", validarDados(criarExercicioValidator), ExercicioController.cadastrar);
+router.put("/exercicio/:id", validarDados(criarExercicioValidator), ExercicioController.atualizar);
+router.patch("/exercicio/:id", validarDados(atualizarExercicioValidator), ExercicioController.atualizarParcial);
 router.delete("/exercicio/:id", ExercicioController.deletar);
 
 //EXPORTAR
