@@ -1,12 +1,19 @@
 import { type Request, type Response } from "express";
 import Exercicio, { type InterfaceExercicio } from "../models/exercicio.js"
+import type { IExercicioRepository, ExercicioDTO, FiltroExercicioDTO } from "../repositories/IExercicioRepository.js";
 
 class ExercicioController{
 
+    private exercicioRepository: IExercicioRepository;
+
+    constructor(exercicioRepository: IExercicioRepository){
+        this.exercicioRepository = exercicioRepository;
+    }
+
     //GET - LISTAR TODOS OS EXERCÍCIOS DO BANCO
-    static async listar (req: Request, res: Response){
+    async listar (req: Request, res: Response){
         try{
-            const listaExercicios = await Exercicio.find({})
+            const listaExercicios = await this.exercicioRepository.listar();
             res.status(200).json(listaExercicios);
         }catch (error){
             res.status(500).json({mensagem: "Erro ao buscar exercício"});
@@ -14,10 +21,10 @@ class ExercicioController{
     }
 
     //GET - BUSCAR UM EXERCÍCIO ESPECÍFICO PELO ID - REQ PARAMS
-    static async buscarPorId (req: Request<{id: string}>, res: Response ){
+    async buscarPorId (req: Request<{id: string}>, res: Response ){
         try{
             const { id } = req.params;
-            const exercicioEncontrado = await Exercicio.findById(id);
+            const exercicioEncontrado = await this.exercicioRepository.buscarPorId(id);
 
             if(!exercicioEncontrado){
                 res.status(404).json({mensagem: "Exercício não encontrado."});
@@ -30,7 +37,7 @@ class ExercicioController{
     }
 
     //GET - FILTRAR EXERCÍCIOS POR CRITÉRIOS OPCIONAIS - REQ QUERY
-    static async buscaPorFiltro (req: Request, res: Response){
+    async buscaPorFiltro (req: Request, res: Response){
         try{
             //Extrair os possíveis filtros enviados após o "?" na URL
             const { name, category, muscle_group, difficulty } = req.query;
@@ -54,29 +61,19 @@ class ExercicioController{
                 filtro.dificuldade = { $regex: String(difficulty), $options: "i"}
             }
             
-            const exerciciosFiltrados = await Exercicio.find(filtro);
-
+            const exerciciosFiltrados = await this.exercicioRepository.buscarPorFiltro(filtro);
             res.status(200).json(exerciciosFiltrados)
+
         }catch (error){
             res.status(500).json({mensagem: "Erro ao filtrar."})
         }
     }
 
     //POST - CADASTRAR UM NOVO LIVRO NO BANCO
-    static async cadastrar (req: Request<{},{},InterfaceExercicio>, res: Response){
+    async cadastrar (req: Request<{},{},ExercicioDTO>, res: Response){
         try{
-            const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
-            const novoExercicio = await Exercicio.create({
-                nome,
-                categoria,
-                dificuldade,
-                equipamento,
-                grupo_muscular,
-                descricao,
-                series: Number(series),
-                repeticoes: Number(repeticoes),
-                cover
-            });
+            const novoExercicio = await this.exercicioRepository.cadastrar(req.body);
+
             res.status(201).json({
                 mensagem: "Exercício cadastrado com sucesso!",
                 exercicio: novoExercicio
@@ -87,25 +84,10 @@ class ExercicioController{
     }
 
     //PUT - ATUALIZAÇÃO COMPLETA
-    static async atualizar (req: Request<{id: string},{},InterfaceExercicio>, res: Response ){
+    async atualizar (req: Request<{id: string},{},ExercicioDTO>, res: Response ){
         try{
             const { id } = req.params;
-            const { nome, categoria, dificuldade, equipamento, grupo_muscular, descricao, series, repeticoes, cover } = req.body;
-            const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
-                id,
-                {
-                    nome,
-                    categoria,
-                    dificuldade,
-                    equipamento,
-                    grupo_muscular,
-                    descricao,
-                    series,
-                    repeticoes,
-                    cover
-                },
-                {new: true}
-            );
+            const exercicioAtualizado = await this.exercicioRepository.atualizar(id, req.body);
 
             if(!exercicioAtualizado){
                 res.status(404).json({mensagem: "Exercício não encontrado."});
@@ -121,16 +103,11 @@ class ExercicioController{
         }
     }
 
-    //  PATCH  - ATUALIZAÇÃO PARCIAL
-    static async atualizarParcial (req: Request <{id: string}, {}, InterfaceExercicio>, res: Response){
+    //PATCH  - ATUALIZAÇÃO PARCIAL
+    async atualizarParcial (req: Request <{id: string}, {}, ExercicioDTO>, res: Response){
         try{
             const { id } = req.params;
-
-            const exercicioAtualizado = await Exercicio.findByIdAndUpdate(
-                id,
-                { $set: req.body },
-                { returnDocument: "after" }
-            );
+            const exercicioAtualizado = await this.exercicioRepository.atualizarParcial(id, req.body);
 
             if(!exercicioAtualizado){
                 res.status(404).json({mensagem: "Exercício não encontrado!"});
@@ -147,12 +124,10 @@ class ExercicioController{
     }
 
     //DELETE - REMOVER EXERCÍCIO
-    static async deletar (req: Request<{id: string}>, res: Response ){
+    async deletar (req: Request<{id: string}>, res: Response ){
         try{
             const { id } = req.params;
-            
-            const exercicioDeletado = await Exercicio.findByIdAndDelete(id);
-
+            const exercicioDeletado = await this.exercicioRepository.deletar(id);
 
             if (!exercicioDeletado) {
                 res.status(404).json({mensagem: "Exercício não encontrado!"});
